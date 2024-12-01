@@ -37,6 +37,9 @@ function augmentation_salaire_shortcode($atts) {
 		margin-left: auto;
 		margin-right: auto; 
 	 }
+     #augmentation-salaire-result {
+        text-align:center;
+     }
 	</style>
     <?php if (!empty($custom_css)) : ?>
     <style type="text/css">
@@ -47,9 +50,9 @@ function augmentation_salaire_shortcode($atts) {
     <div id="form-augmentation-salaire">
         <form id="augmentation-salaire-form">
             <?php wp_nonce_field('augmentation_salaire_nonce', 'augmentation_salaire_nonce_field'); ?>
-            <label for="amount"><?php _e('Amount:', 'augmentation-salaire'); ?></label>
+            <label for="amount"><?php _e('Votre salaire annuel :', 'augmentation-salaire'); ?></label>
             <input type="number" id="amount" name="amount" value="<?php echo esc_attr($amount); ?>" required>
-            <label for="year"><?php _e('Year:', 'augmentation-salaire'); ?></label>
+            <label for="year"><?php _e('Année de début :', 'augmentation-salaire'); ?></label>
             <select id="year" name="year" required>
                 <?php
                 for ($i = $start_year; $i <= $current_year; $i++) {
