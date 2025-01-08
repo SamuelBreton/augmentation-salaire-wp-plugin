@@ -22,3 +22,9 @@ add_action('plugins_loaded', 'augmentation_salaire_load_textdomain');
 require_once AUGMENTATION_SALAIRE_PATH . 'admin/augmentation-salaire-admin.php';
 require_once AUGMENTATION_SALAIRE_PATH . 'public/augmentation-salaire-form.php';
 require_once AUGMENTATION_SALAIRE_PATH . 'widgets/augmentation-salaire-widget.php';
+
+// Dans la fonction d'activation du plugin
+register_activation_hook(__FILE__, function() {
+    // Autres options existantes...
+    add_option('augmentation_salaire_api_url', 'https://api.augmentation-salaire.com/v1/calcul');
+});

@@ -22,7 +22,8 @@ function augmentation_salaire_shortcode($atts) {
 
     // Enqueue jQuery and custom script for AJAX
     wp_enqueue_script('jquery');
-    wp_enqueue_script('augmentation-salaire-script', AUGMENTATION_SALAIRE_URL . 'public/js/augmentation-salaire.js', array('jquery'), null, true);
+    wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', array('jquery'), null, true);
+    wp_enqueue_script('augmentation-salaire-script', AUGMENTATION_SALAIRE_URL . 'public/js/augmentation-salaire.js', array('jquery', 'chartjs'), null, true);
     wp_localize_script('augmentation-salaire-script', 'augmentation_salaire_ajax', array(
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('augmentation_salaire_nonce')
@@ -47,10 +48,47 @@ function augmentation_salaire_shortcode($atts) {
     </style>
     <?php endif; ?>
 
+    <style type="text/css">
+        #btn-salaire-submit {
+            display: block;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto; 
+        }
+        #augmentation-salaire-result {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result-text {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .show-more-link {
+            margin: 15px 0;
+        }
+        .show-more-link a {
+            color: #0073aa;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .show-more-link a:hover {
+            color: #00a0d2;
+            text-decoration: underline;
+        }
+        #salary-chart-container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+
     <div id="form-augmentation-salaire">
         <form id="augmentation-salaire-form">
             <?php wp_nonce_field('augmentation_salaire_nonce', 'augmentation_salaire_nonce_field'); ?>
-            <label for="amount"><?php _e('Votre salaire annuel :', 'augmentation-salaire'); ?></label>
+            <label for="amount"><?php _e('Votre salaire mensuel :', 'augmentation-salaire'); ?> </label>
             <input type="number" id="amount" name="amount" value="<?php echo esc_attr($amount); ?>" required>
             <label for="year"><?php _e('Année de début :', 'augmentation-salaire'); ?></label>
             <select id="year" name="year" required>
@@ -76,7 +114,6 @@ add_shortcode('augmentation_salaire', 'augmentation_salaire_shortcode');
 function augmentation_salaire_ajax_handler() {
     check_ajax_referer('augmentation_salaire_nonce', 'security');
 
-    // Validate input data
     $amount = isset($_POST['amount']) ? floatval($_POST['amount']) : 0;
     $year = isset($_POST['year']) ? intval($_POST['year']) : 0;
 
@@ -85,8 +122,10 @@ function augmentation_salaire_ajax_handler() {
         wp_die();
     }
 
-    // Call API with validated data
-    $response = wp_remote_get("https://api.augmentation-salaire.com/calcul?amount=$amount&year=$year");
+    $api_url = get_option('augmentation_salaire_api_url', 'https://api.augmentation-salaire.com/v1/calcul');
+    
+    // Ajout des paramètres pour obtenir les données historiques
+    $response = wp_remote_get("$api_url?amount=$amount&year=$year&includeHistory=true");
 
     if (is_wp_error($response)) {
         wp_send_json_error(__('Error contacting the API.', 'augmentation-salaire'));

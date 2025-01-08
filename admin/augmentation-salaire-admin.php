@@ -65,6 +65,19 @@ function augmentation_salaire_settings_init() {
         'augmentation-salaire',
         'augmentation_salaire_settings_section'
     );
+
+    add_settings_field(
+        'augmentation_salaire_api_url',
+        __('URL de l\'API', 'augmentation-salaire'),
+        function() {
+            $api_url = get_option('augmentation_salaire_api_url', 'https://api.augmentation-salaire.com/v1/calcul');
+            echo "<input type='text' name='augmentation_salaire_api_url' value='" . esc_attr($api_url) . "' class='regular-text'>";
+        },
+        'augmentation-salaire',
+        'augmentation_salaire_settings_section'
+    );
+
+    register_setting('augmentation-salaire', 'augmentation_salaire_api_url');
 }
 
 function augmentation_salaire_start_year_render() {
