@@ -11,7 +11,7 @@ function augmentation_salaire_shortcode($atts) {
     );
 
     // Get GET parameters and validate them
-    $amount = isset($_GET['amount']) ? floatval($_GET['amount']) : ''; // Ensure it's a float
+    $amount = isset($_GET['amount']) ? floatval($_GET['amount']) : 2000; // Valeur par défaut : 2000
     $year = isset($_GET['year']) ? intval($_GET['year']) : ''; // Ensure it's an integer
 
     $start_year = get_option('augmentation_salaire_start_year', '2010');
